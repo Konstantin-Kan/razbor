@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разбор переписок · Константин Кан</title>
+<meta name="description" content="Покажу, на каком сообщении у Вас уходят клиенты и что писать вместо этого. Разбор Ваших переписок с клиентами.">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+:root{
+  --bg:#f7f6f2; --bg2:#efece5; --card:#ffffff; --line:rgba(12,12,10,.10); --line2:rgba(12,12,10,.16);
+  --text:#0c0c0a; --muted:#6b6b65; --gold:#8c6414; --gold-fill:#e8b54a; --gold-soft:rgba(168,120,28,.09);
+  --red:#a3392f; --green:#2f7a45;
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:Inter,system-ui,sans-serif;
+  --hero:clamp(2.5rem,1.2rem + 4vw,4.6rem);
+  --h2:clamp(2rem,1.1rem + 3vw,3.6rem);
+  --body:clamp(1rem,.95rem + .2vw,1.1rem);
+  --sec:clamp(4.5rem,3rem + 6vw,9rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --shadow:0 1px 2px rgba(12,12,10,.04),0 12px 40px -18px rgba(12,12,10,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--bg);color:var(--text);font:400 var(--body)/1.65 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* лёгкое «зерно», как у плёнки */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem)}
+section{padding-block:var(--sec)}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em}
+.float b,.errs .n,.fact b,.quote,.how-step b,.cost-q p,.new,.g-badge,h1,h2,h3{font-variant-numeric:lining-nums}
+h1{font-size:var(--hero);line-height:1.02}
+h2{font-size:var(--h2);line-height:1.05;margin-bottom:1.2rem}
+h3{font-size:1.4rem;line-height:1.2;font-weight:600}
+p{max-width:62ch}
+.muted{color:var(--muted)}
+.gold{color:var(--gold)}
+.eyebrow{font:600 .75rem/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:1.1rem;display:inline-flex;align-items:center;gap:.6rem}
+.eyebrow::before{content:"";width:18px;height:1px;background:currentColor}
+
+/* кнопки: текст «перелистывается» при наведении */
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:1.1rem 1.9rem;background:var(--text);color:#fff;border-radius:14px;text-decoration:none;font-weight:600;font-size:1rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px -14px rgba(12,12,10,.55)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn svg{width:20px;height:20px;transition:transform .4s var(--ease)}
+.btn:hover svg{transform:translateY(3px)}
+.flip{display:inline-block;overflow:hidden;height:1.3em;line-height:1.3em;vertical-align:top}
+.flip span{display:block;transition:transform .5s var(--ease)}
+.btn:hover .flip span{transform:translateY(-100%)}
+.btn-note{font-size:.88rem;color:var(--muted);margin-top:.8rem}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line2)}
+.btn-ghost:hover{background:var(--text);color:#fff;box-shadow:none}
+
+/* верхняя полоса */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(247,246,242,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);font-size:.88rem}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-block:.7rem}
+.topbar b{font-weight:600;font-variant-numeric:tabular-nums}
+.topbar a{text-decoration:none;font-weight:600;white-space:nowrap}
+
+/* первый экран */
+.hero{padding-top:clamp(2.5rem,5vw,4.5rem);padding-bottom:clamp(3rem,6vw,5rem)}
+.hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center}
+.hero .who{display:flex;align-items:center;gap:.6rem;font-weight:500;margin-bottom:1.6rem;color:var(--muted);font-size:.95rem}
+.hero .who i{width:7px;height:7px;border-radius:50%;background:var(--gold-fill)}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.ticks{list-style:none;display:grid;gap:.55rem;margin:1.8rem 0 2.2rem;font-size:clamp(1.02rem,1rem + .3vw,1.15rem)}
+.ticks li::before{content:"✓";color:var(--gold);font-weight:700;margin-right:.6rem}
+.hero-photo{position:relative}
+.hero-photo img{border-radius:24px;aspect-ratio:4/5;max-height:calc(100vh - 150px);object-fit:cover;object-position:50% 20%;width:100%;box-shadow:var(--shadow)}
+.float{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:.8rem 1rem;box-shadow:var(--shadow);font-size:.88rem;line-height:1.35}
+.float b{display:block;font-family:var(--serif);font-size:1.6rem;line-height:1.05;color:var(--gold)}
+.float.f2{right:-1rem;top:1.5rem}
+
+/* переписка */
+.chat{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:1.3rem;max-width:380px;box-shadow:var(--shadow)}
+.chat-head{display:flex;gap:.7rem;align-items:center;padding-bottom:.9rem;border-bottom:1px solid var(--line);margin-bottom:1rem;font-size:.9rem;line-height:1.35}
+.chat-head i{width:34px;height:34px;border-radius:50%;background:#e4dfd4}
+.bub{padding:.65rem .95rem;border-radius:16px;margin-bottom:.5rem;max-width:85%;font-size:.95rem;line-height:1.4}
+.bub.in{background:#f0ede6;border-bottom-left-radius:4px}
+.bub.out{background:var(--text);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.bub.bad{background:#fbe9e6;color:var(--red)}
+.seen{text-align:right;font-size:.75rem;color:var(--muted)}
+.silence{text-align:center;font-size:.8rem;color:var(--muted);margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--line2)}
+.chat .lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:.6rem 0 .5rem}
+
+/* карточки */
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(1.4rem,3vw,2.2rem);box-shadow:var(--shadow)}
+.card p{color:var(--muted)}
+
+/* второй фон */
+.light{background:var(--bg2)}
+.pain-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:start}
+.pains{display:grid;gap:.8rem;margin-top:2rem}
+.pain{background:var(--card);border-radius:16px;padding:1.1rem 1.3rem;font-weight:500;font-size:1.05rem;border:1px solid var(--line);border-left:3px solid var(--red)}
+.foot-note{margin-top:2.2rem;font-weight:600;font-size:1.1rem}
+
+/* ошибки */
+.errs{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
+.errs .card{position:relative;padding-top:4.6rem}
+.errs .n{position:absolute;top:1.1rem;left:clamp(1.4rem,3vw,2.2rem);font-family:var(--serif);font-style:italic;font-size:2.4rem;color:var(--gold)}
+.errs h3{font-size:1.35rem}
+
+/* 3 шага */
+.step-row{display:grid;grid-template-columns:1fr 380px;gap:clamp(1.5rem,4vw,3.5rem);align-items:center;padding:2.6rem 0;border-top:1px solid var(--line2)}
+.step-row:first-of-type{border-top:0}
+.step-txt .tag{display:inline-block;background:var(--text);color:#fff;font:600 .72rem var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:.4rem .75rem;border-radius:99px;margin-bottom:1rem}
+.step-txt h3{font-size:clamp(1.6rem,1.1rem + 1.4vw,2.3rem);margin-bottom:.8rem}
+.step-txt p{color:var(--muted);margin-bottom:.6rem}
+.step-side .chat{max-width:none}
+.good{font-weight:600;border-left:2px solid var(--green);padding-left:.9rem;margin-top:1.2rem}
+
+/* калькулятор */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:2rem;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:clamp(1.4rem,4vw,3rem);margin-top:2.5rem;box-shadow:var(--shadow)}
+.field{margin-bottom:1.3rem}
+.field label{display:flex;justify-content:space-between;font-weight:500;margin-bottom:.5rem}
+.field label output{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--text);height:28px}
+.cur{display:inline-flex;border:1px solid var(--line2);border-radius:99px;overflow:hidden;margin-bottom:1.5rem;padding:3px}
+.cur button{background:none;border:0;color:var(--muted);padding:.45rem 1rem;font:600 .9rem var(--sans);cursor:pointer;border-radius:99px;transition:background .25s,color .25s}
+.cur button[aria-pressed=true]{background:var(--text);color:#fff}
+.cur button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.calc-out{background:var(--bg);border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center}
+.calc-out .big{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,1.2rem + 3.4vw,3.6rem);line-height:1.05;margin:.4rem 0 .6rem;font-variant-numeric:lining-nums tabular-nums}
+.calc-out .yr{font-size:1.05rem}
+
+/* автор */
+.author{display:grid;grid-template-columns:300px 1fr;gap:clamp(1.5rem,5vw,4rem);align-items:stretch}
+.author img{width:100%;height:0;min-height:100%;border-radius:24px;object-fit:cover;object-position:50% 0%;box-shadow:var(--shadow)}
+.facts{display:grid;margin-top:1.8rem}
+.fact{display:grid;grid-template-columns:120px 1fr;gap:1rem;padding:1rem 0;border-top:1px solid var(--line2)}
+.fact b{font-family:var(--serif);font-weight:600;font-size:1.2rem;color:var(--gold);line-height:1.3}
+.quote{margin-top:1.8rem;font-family:var(--serif);font-style:italic;font-size:1.6rem;line-height:1.3}
+
+/* разбор */
+.cases{display:grid;max-width:820px;gap:1.5rem;margin-top:2.5rem}
+.case{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:grid;grid-template-columns:200px 1fr;align-items:start;box-shadow:var(--shadow)}
+.case img{width:200px;border-right:1px solid var(--line)}
+.case-txt{padding:1.3rem;display:grid;gap:.8rem;align-content:start}
+.case-txt b{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
+.err b{color:var(--red)}.fix b{color:var(--green)}
+.err{color:var(--muted)}
+.fix{font-weight:500;background:#eef6ef;border-radius:12px;padding:.9rem 1rem}
+.hidden-note{font-size:.8rem;color:var(--muted);margin-top:.8rem}
+
+/* отзыв */
+.review{display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;margin-top:2.5rem}
+.review-side{flex:1 1 280px;max-width:380px}
+.shots{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start}
+.shot{width:240px;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.shots .shot:nth-child(2){margin-top:2rem}
+.receipt{margin-top:1rem;border-radius:12px;width:200px;box-shadow:var(--shadow)}
+
+/* приглашение */
+.invite{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:start}
+.invite h2{font-size:clamp(1.9rem,1.1rem + 2.2vw,3rem)}
+.will{counter-reset:w;list-style:none;display:grid;gap:.8rem;margin-top:1.2rem}
+.will li{counter-increment:w;display:flex;gap:.9rem;font-size:1.05rem}
+.will li::before{content:counter(w);flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font:600 .82rem var(--sans);margin-top:.05rem}
+.how-step{display:flex;gap:.9rem;padding:.8rem 0;border-top:1px solid var(--line)}
+.how-step b{font-family:var(--serif);font-style:italic;font-size:1.4rem;line-height:1.2;color:var(--gold)}
+.how-step span{color:var(--muted)}
+
+/* цена */
+.cost-q{display:grid;gap:.7rem;margin:1rem 0 2.2rem}
+.cost-q p{font-family:var(--serif);font-weight:500;font-size:clamp(1.5rem,1.1rem + 1.4vw,2.2rem);line-height:1.2;max-width:none}
+.heart{font-size:clamp(1.05rem,1rem + .5vw,1.3rem);font-weight:600;max-width:46ch;border-left:2px solid var(--gold);padding-left:1.1rem}
+.offer{display:grid;grid-template-columns:1.1fr .9fr;background:var(--card);border:1px solid var(--line);border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+.offer-l{padding:clamp(1.5rem,4vw,2.8rem)}
+.offer-l h3{font-size:1.7rem}
+.offer-r{background:var(--bg2);padding:clamp(1.5rem,4vw,2.8rem);border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.bonus{display:flex;gap:1rem;align-items:center;margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid var(--line)}
+.bonus img{width:72px;border-radius:6px;flex:none}
+.bonus-ico{width:72px;height:72px;flex:none;border-radius:12px;background:var(--gold-soft);display:grid;place-items:center}
+.bonus-ico svg{width:30px;height:30px;stroke:var(--gold)}
+.bonus small{display:block;color:var(--gold);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:.7rem}
+.bonus b{display:block;margin:.2rem 0;font-weight:600}
+.bonus span{color:var(--muted);font-size:.92rem}
+.places{font:600 .75rem var(--sans);letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+.old{text-decoration:line-through;color:var(--muted);font-size:1.05rem;margin-top:1rem}
+.new{font-family:var(--serif);font-weight:600;font-size:clamp(2.6rem,1.6rem + 3vw,3.8rem);line-height:1;margin:.3rem 0 .6rem}
+.new small{display:block;font-size:.45em;color:var(--muted);margin-top:.3rem}
+.guarantee{display:flex;gap:1.6rem;align-items:center;margin-top:1.5rem;border:1px dashed var(--line2);border-radius:24px;padding:clamp(1.3rem,3vw,2.2rem)}
+.guarantee h3{font-size:1.7rem;margin-bottom:.6rem}
+.g-badge{flex:none;width:110px;height:110px;border-radius:50%;border:1px solid var(--gold);display:grid;place-content:center;text-align:center;font-family:var(--serif);font-weight:600;font-size:1.9rem;line-height:1;color:var(--gold)}
+.g-badge small{font:500 .72rem var(--sans);color:var(--muted);margin-top:.3rem}
+
+/* вопросы */
+.faq{display:grid;gap:.6rem;margin-top:2rem;max-width:820px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:16px;transition:box-shadow .3s}
+.faq details[open]{box-shadow:var(--shadow)}
+.faq summary{cursor:pointer;list-style:none;padding:1.15rem 1.4rem;font-weight:600;display:flex;justify-content:space-between;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.4rem;line-height:1;color:var(--muted);transition:transform .4s var(--ease)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq summary:focus-visible{outline:2px solid var(--gold);border-radius:16px}
+.faq details p{padding:0 1.4rem 1.2rem;color:var(--muted)}
+
+/* мягкий выход */
+.soft{display:flex;gap:2rem;align-items:center}
+.soft img{width:150px;border-radius:8px;box-shadow:var(--shadow);flex:none}
+.btn-line{display:inline-block;margin-top:1rem;font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px;transition:color .25s}
+.btn-line:hover{color:var(--gold)}
+.btn-line:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* финал */
+.final{text-align:center}
+.final h2{max-width:22ch;margin-inline:auto}
+.final p{margin-inline:auto}
+footer{border-top:1px solid var(--line);padding:2rem 0;font-size:.88rem;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+footer a{text-decoration:none;color:var(--text)}
+footer a:hover{color:var(--gold)}
+
+/* появление при прокрутке: по очереди, снизу вверх */
+.js .rv{opacity:0;transform:translateY(32px);transition:opacity 1s var(--ease),transform 1s var(--ease);transition-delay:var(--d,0s)}
+.js .rv.in{opacity:1;transform:none}
+/* заголовок первого экрана — по словам */
+.js .rv.words{opacity:1;transform:none}
+.js .words .w{display:inline-block;opacity:0;transform:translateY(.45em);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--d,0s) + var(--i) * 55ms)}
+.js .words.in .w{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.js .rv,.js .words .w{opacity:1;transform:none;transition:none}}
+
+@media (max-width:860px){
+  .hero-grid,.pain-grid,.author,.offer,.errs,.step-row,.invite,.calc{grid-template-columns:1fr}
+  .hero-photo{max-width:420px;margin-inline:auto;width:100%}
+  .float.f2{right:.6rem}
+  .author img{height:auto;min-height:0;max-width:260px;aspect-ratio:4/5;margin-inline:auto}
+  .case{grid-template-columns:1fr}.case img{width:200px;margin:1rem auto 0;border:1px solid var(--line);border-radius:12px}
+  .shots{justify-content:center}.shot{width:min(240px,44vw)}
+  .offer-r{border-left:0;border-top:1px solid var(--line)}
+  .fact{grid-template-columns:1fr;gap:.2rem}
+  .guarantee,.soft{flex-direction:column;align-items:flex-start}
+  .soft img{width:120px}
+  .topbar .hide-m{display:none}
+  .topbar{font-size:.8rem}.topbar span{white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <span>Разбор переписок · <b>20 000 ₩ / 5 000 ₸</b><span class="hide-m"> для первых 20 человек</span></span>
+    <a href="#steps">3 шага ↓</a>
+  </div>
+</div>
+
+<!-- 1. ПЕРВЫЙ ЭКРАН -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="who"><i></i>Константин Кан · в продажах с 2002 года</div>
+      <h1>Как закрывать <em>в 2 раза больше</em> клиентов из тех, кто уже пишет Вам в директ</h1>
+      <ul class="ticks">
+        <li>без необходимости увеличивать рекламный бюджет</li>
+        <li>без впаривания</li>
+        <li>даже если блога нет и клиенты идут по сарафану</li>
+      </ul>
+      <div class="hero-cta">
+        <a class="btn btn-ghost" href="#steps">Смотреть 3 шага
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      </div>
+    </div>
+    <div class="hero-photo rv">
+      <img src="img/hero.jpg" alt="Константин Кан" width="788" height="1400">
+      <div class="float f2"><b>24 года</b>в продажах руками</div>
+    </div>
+  </div>
+</header>
+
+<!-- 2. ЭТО ДЛЯ ВАС -->
+<section class="light">
+  <div class="wrap pain-grid">
+    <div>
+      <span class="eyebrow">Узнаёте себя?</span>
+      <h2>Это для Вас, если</h2>
+      <div class="pains">
+        <div class="pain rv">пишут «сколько стоит?» и пропадают после цены</div>
+        <div class="pain rv">говорят «я подумаю» и исчезают</div>
+        <div class="pain rv">второй раз написать неловко: кажется, что навязываетесь</div>
+      </div>
+    </div>
+    <div class="chat rv" aria-label="Пример переписки">
+      <div class="chat-head"><i></i><div><b>Клиент</b><br><span class="muted">был(а) в сети недавно</span></div></div>
+      <div class="bub in">Здравствуйте, сколько стоит?</div>
+      <div class="bub out">60 000 ₩ / 20 000 ₸</div>
+      <div class="seen">прочитано ✓✓</div>
+      <div class="silence">… и тишина</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. ОШИБКИ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Что я вижу в переписках</span>
+    <h2 class="rv">Одни и те же ошибки, которые забирают деньги из кармана</h2>
+    <div class="errs">
+      <div class="card rv"><span class="n">1</span><h3>Сразу называют цену</h3></div>
+      <div class="card rv"><span class="n">2</span><h3>Отвечают коротко или скидывают прайс — и разговор на этом заканчивается</h3></div>
+      <div class="card rv"><span class="n">3</span><h3>Не пишут второй раз после «я подумаю»</h3></div>
+    </div>
+    <p class="foot-note">Если узнали себя, листайте дальше: покажу, как это исправить за 3 шага.</p>
+  </div>
+</section>
+
+<!-- 4. ПОЛЬЗА: 3 ШАГА -->
+<section id="steps" class="light">
+  <div class="wrap">
+    <span class="eyebrow">Как это исправить</span>
+    <h2 class="rv">3 шага</h2>
+
+    <div class="step-row rv">
+      <div class="step-txt">
+        <span class="tag">Шаг 1</span>
+        <h3>Не спешите с ценой</h3>
+        <p>Человек пишет: «Сколько стоит консультация?» Обычно отвечают: «60 000 ₩ / 20 000 ₸». И человек уходит сравнивать цены.</p>
+      </div>
+      <div class="step-side">
+      <div class="chat">
+        <div class="lbl">А если так:</div>
+        <div class="bub in">Сколько стоит консультация?</div>
+        <div class="bub out">Подскажу точно. А что сейчас беспокоит?</div>
+        <div class="bub in">Третий месяц не могу решиться уйти с работы.</div>
+        <div class="bub out">А что держит?</div>
+        <div class="bub in">Страшно остаться без денег. Вот и сижу.</div>
+      </div>
+        <p class="good after">Вот теперь понятно, за что человек платит: перестать топтаться на месте из-за страха. И цену он слышит уже по-другому.</p>
+      </div>
+    </div>
+
+    <div class="step-row rv">
+      <div class="step-txt">
+        <span class="tag">Шаг 2</span>
+        <h3>Не заканчивайте разговор за клиента</h3>
+        <p>«Вы работаете онлайн?» — «Да 😊». Всё, человеку больше нечего сказать.</p>
+        <p>А тот, кто спрашивает про онлайн, обычно переживает об одном: будет ли толк без личной встречи. Ответьте и сразу спросите об этом.</p>
+      </div>
+      <div class="step-side">
+      <div class="chat">
+        <div class="bub in">Вы работаете онлайн?</div>
+        <div class="bub out bad">Да 😊</div>
+        <div class="lbl">А если так:</div>
+        <div class="bub in">Вы работаете онлайн?</div>
+        <div class="bub out">Да, большинство моих клиентов онлайн. Многие сначала переживают, будет ли толк без личной встречи. Вас это тоже волнует?</div>
+      </div>
+        <p class="good after">Человек отвечает «да» — и разговор пошёл.</p>
+      </div>
+    </div>
+
+    <div class="step-row rv">
+      <div class="step-txt">
+        <span class="tag">Шаг 3</span>
+        <h3>Напишите второй раз</h3>
+        <p>Клиенту неловко написать первым. Вам неловко напомнить. Так и расходитесь.</p>
+      </div>
+      <div class="step-side">
+      <div class="chat">
+        <div class="bub in">Я подумаю</div>
+        <div class="silence" style="margin:.4rem 0 1rem">… прошло несколько дней</div>
+        <div class="bub out">Анна, одним словом: вопрос с работой ещё актуален?</div>
+      </div>
+        <p class="good after">Одно короткое сообщение. На такое легко ответить.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. КАЛЬКУЛЯТОР -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Посчитайте сами</span>
+    <h2 class="rv">Так Вы закрываете больше из тех же заявок</h2>
+    <div class="calc rv">
+      <div>
+        <div class="cur" role="group" aria-label="Валюта">
+          <button type="button" data-cur="won" aria-pressed="true">₩ вона</button>
+          <button type="button" data-cur="tenge" aria-pressed="false">₸ тенге</button>
+        </div>
+        <div class="field"><label for="leads">Пишут в месяц, человек <output id="o-leads">20</output></label><input id="leads" type="range" min="5" max="150" step="1" value="20"></div>
+        <div class="field"><label for="buy">Из них покупают <output id="o-buy">2</output></label><input id="buy" type="range" min="0" max="50" step="1" value="2"></div>
+        <div class="field"><label for="check">Средний чек <output id="o-check">600 000 ₩</output></label><input id="check" type="range" min="50000" max="3000000" step="50000" value="600000"></div>
+      </div>
+      <div class="calc-out">
+        <span class="muted">Станут покупать в 2 раза больше — это ещё</span>
+        <div class="big" id="res">1 200 000 ₩</div>
+        <span class="muted">в месяц. За год — <b class="yr gold" id="res-yr">14 400 000 ₩</b></span>
+        <p class="muted" style="margin-top:1rem;font-size:.92rem">Без необходимости увеличивать рекламный бюджет.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. АВТОР -->
+<section class="light">
+  <div class="wrap author">
+    <img class="rv" src="img/author.jpg" alt="Константин Кан" width="788" height="1400" loading="lazy">
+    <div>
+      <span class="eyebrow">Кто разбирает</span>
+      <h2>На словах всё просто</h2>
+      <p class="muted">Но в своих переписках эти места не видно: кажется, всё написано нормально.</p>
+      <p style="margin-top:1rem">Я продаю с 17 лет — от промоутера на улице до корпоративных клиентов Marriott. Поэтому со стороны такие места вижу сразу.</p>
+      <div class="facts">
+        <div class="fact"><b>Marriott</b><span>Renaissance Aktau — Best Associate of the Year 2011.</span></div>
+        <div class="fact"><b>Kraft Foods</b><span>Супервайзер ключевых клиентов: около 252% к продажам прошлого года.</span></div>
+        <div class="fact"><b>2025</b><span>Воронка для юристов: 5 рилсов → больше 30 платных консультаций и больше 10 проектов за месяц.</span></div>
+      </div>
+      <p class="quote">Эти места я и показываю на разборе Ваших переписок.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7. ДОКАЗАТЕЛЬСТВА: РАЗБОР -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Так выглядит разбор</span>
+    <h2 class="rv">Где ушёл клиент и что надо было написать</h2>
+    <p class="muted rv">Кусок из настоящего разбора: 6 клиентов, 14 скриншотов. Контакт заводится хорошо, а сделки теряются в конце: решение отдаётся клиенту, и нет конкретного следующего шага.</p>
+    <div class="cases">
+      <div class="case rv">
+        <img src="img/razbor-1.jpg" alt="Переписка с клиентом: «Не решились ещё?» — «там бойфренд решает»" loading="lazy" width="800" height="1305">
+        <div class="case-txt">
+          <div class="err"><b>Где ушёл клиент</b>После «да» — 13 дней тишины, потом «Не решились ещё?». На такой вопрос проще всего ответить «нет». Кто принимает решение, не выяснили: в итоге решает бойфренд, а его в переписке не было.</div>
+          <div class="fix"><b>Как надо</b>«Отлично, что решаете вместе! Давайте я покажу расчёт вам обоим — 20 минут, по видео или вживую. Вам удобнее в среду вечером или в субботу?»</div>
+        </div>
+      </div>
+      <div class="case rv">
+        <img src="img/razbor-2.jpg" alt="Переписка с клиентом: «Хорошо, спасибо» — через 25 дней «Не решились ещё?»" loading="lazy" width="800" height="1035">
+        <div class="case-txt">
+          <div class="err"><b>Где ушёл клиент</b>Клиент дошёл до документов и ответил «Хорошо, спасибо». Самый горячий момент. Следующее сообщение — через 25 дней, и снова «Не решились ещё?».</div>
+          <div class="fix"><b>Как надо</b>Сразу после «Хорошо, спасибо»: «Когда удобно оформить — завтра после работы или в выходные? Займёт 10 минут».</div>
+        </div>
+      </div>
+    </div>
+    <p class="hidden-note">Имена, контакты и фото клиентов скрыты</p>
+  </div>
+</section>
+
+<!-- ДОКАЗАТЕЛЬСТВА: ОТЗЫВ -->
+<section style="background:var(--bg2)">
+  <div class="wrap">
+    <span class="eyebrow">Отзыв</span>
+    <h2 class="rv">Провёл разбор. Вот что мне написали после</h2>
+    <div class="review">
+      <div class="shots">
+        <img class="shot rv" src="img/otzyv-1.jpg" alt="Скриншот отзыва после разбора, часть 1" loading="lazy" width="920" height="1040">
+        <img class="shot rv" src="img/otzyv-2.jpg" alt="Скриншот отзыва после разбора, часть 2" loading="lazy" width="920" height="610">
+      </div>
+      <div class="review-side rv">
+        <div class="card">
+          <span class="eyebrow">Чем закончилось</span>
+          <h3 style="font-weight:700;font-size:1.4rem;margin-bottom:.6rem">Оплатила на следующий день</h3>
+          <p class="muted">После разбора я всегда говорю: подумайте, решения на горячую голову мне не нужны. Она подумала, утром написала отзыв, а вечером оплатила.</p>
+        </div>
+        <img class="receipt" src="img/oplata.jpg" alt="Чек об оплате 150 000 ₸ от 04.10.2026" loading="lazy" width="828" height="1356">
+        <p class="hidden-note">Имена и контакты скрыты, данные чека закрыты</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. ПРИГЛАШЕНИЕ -->
+<section id="offer">
+  <div class="wrap">
+    <div class="invite">
+      <div>
+        <span class="eyebrow">Разбор Ваших переписок</span>
+        <h2 class="rv">Все ответы уже найдены, и я предлагаю Вам получить их на разборе</h2>
+        <p class="muted">Где я по шагам покажу:</p>
+        <ol class="will">
+          <li>на каком сообщении у Вас уходят клиенты</li>
+          <li>что писать вместо цены, чтобы человек сам рассказал, что ему нужно</li>
+          <li>как не заканчивать разговор за клиента</li>
+          <li>как вернуть тех, кто сказал «я подумаю», без навязывания</li>
+          <li>как закрывать больше из тех же заявок без увеличения рекламного бюджета</li>
+        </ol>
+      </div>
+      <div class="how card rv">
+        <h3 style="font-weight:700;margin-bottom:1rem">Как проходит</h3>
+        <div class="how-step"><b>1</b><span>Пишете мне «РАЗБОР» в директ. Задам пару вопросов, чтобы убедиться, что разбор Вам точно подходит.</span></div>
+        <div class="how-step"><b>2</b><span>Заранее присылаете 3–5 переписок с клиентами: те, где человек пропал или сказал «я подумаю». Имена можно скрыть.</span></div>
+        <div class="how-step"><b>3</b><span>Созваниваемся. Идём по Вашим перепискам: где человек пропал и почему. В конце — главные ошибки и что писать вместо этого.</span></div>
+        <a class="btn" href="https://ig.me/m/constantine.kan" target="_blank" rel="noopener" style="margin-top:1.4rem">Написать «РАЗБОР»</a>
+        <p class="btn-note">Откроется мой директ в Instagram. Отвечаю сам, лично</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. ЦЕНА -->
+<section class="light">
+  <div class="wrap">
+    <span class="eyebrow">Сколько это стоит?</span>
+    <div class="cost-q">
+      <p class="rv">А сколько стоит один клиент, который ушёл молча?</p>
+      <p class="rv">А сколько Вы потратили на рекламу, чтобы он вообще написал?</p>
+      <p class="rv">А сколько нервов уходит, когда пишут, а не покупают?</p>
+      <p class="rv">Сколько Вы недозарабатываете в месяц? 500 000 ₩? 1 000 000 ₩?</p>
+    </div>
+    <p class="heart rv">Положа руку на сердце, я считаю, что решение таких проблем должно стоить от 3 000 000 ₩ / 1 000 000 ₸!</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="offer rv">
+      <div class="offer-l">
+        <span class="eyebrow">Но это ещё не всё</span>
+        <h3 style="font-weight:700;font-size:1.4rem">Первым 20 написавшим прямо на разборе я подарю 2 бонуса</h3>
+        <div class="bonus">
+          <img src="img/kniga.jpg" alt="Обложка мини-книги «Фразы, которые закрывают сделки»" loading="lazy" width="909" height="1286">
+          <div><small>Бонус №1</small><b>Мини-книга «Фразы, которые закрывают сделки»</b><span><s>50 000 ₩ / 15 000 ₸</s> → бесплатно</span></div>
+        </div>
+        <div class="bonus">
+          <div class="bonus-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></div>
+          <div><small>Бонус №2</small><b>Шпаргалка «Что отвечать на „дорого“, „я подумаю“, „у других дешевле“»</b><span><s>50 000 ₩ / 15 000 ₸</s> → бесплатно</span></div>
+        </div>
+      </div>
+      <div class="offer-r">
+        <span class="places">Для первых 20 человек</span>
+        <div class="old">60 000 ₩ / 20 000 ₸</div>
+        <div class="new">20 000 ₩<small>5 000 ₸</small></div>
+        <p class="muted" style="font-size:.95rem">Прямо сейчас Вы можете получить всё, что я перечислил, всего за 20 000 ₩ / 5 000 ₸. Обычная цена разбора — 60 000 ₩ / 20 000 ₸.</p>
+        <a class="btn" href="https://ig.me/m/constantine.kan" target="_blank" rel="noopener" style="justify-content:center;margin-top:1.4rem">Написать «РАЗБОР»</a>
+      </div>
+    </div>
+
+    <div class="guarantee rv">
+      <div class="g-badge">100%<small>возврат</small></div>
+      <div>
+        <h3 style="font-weight:700;font-size:1.4rem;margin-bottom:.6rem">Вы ничем не рискуете!</h3>
+        <p class="muted">Я уверен в своём подходе, поэтому даю гарантию возврата: если информация на разборе покажется Вам банальной, просто напишите мне «Костя, хочу возврат».</p>
+        <p style="margin-top:.6rem">Скажу даже больше! Я дополнительно скину Вам 20 000 ₩ / 5 000 ₸ за потраченное время. <b class="gold">Всю ответственность беру на себя!</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. ВОПРОСЫ -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow">Вопросы</span>
+    <h2 class="rv">У Вас могли возникнуть вопросы</h2>
+    <div class="faq">
+      <details><summary>Почему так дёшево, если это так ценно?</summary><p>Буду откровенен… Я уверен: когда Вы увидите, что происходит на разборе, и получите тот объём пользы, который Вас ждёт, Вы сами захотите узнать, что ещё я делаю. Но насильно предлагать ничего не буду. Разбор — полностью самостоятельный продукт!</p></details>
+      <details><summary>Почему только 20 человек? Это дожим или уловка?</summary><p>20 разборов — это 10 вечеров моего времени. Именно столько я физически могу выделить в месяц без вреда для основной работы.</p></details>
+      <details><summary>У меня нет блога. Подойдёт?</summary><p>Да. Когда клиенты идут по сарафану, они уже знают, к кому идут: их прогрели до Вас. Такие покупают не 1 из 10, а до 8 из 10. Терять их в переписке — самое обидное.</p></details>
+      <details><summary>Будете впаривать курс?</summary><p>В конце пару минут расскажу про группу. Скажете «нет» — давить не буду. Заодно увидите, как продают без впаривания.</p></details>
+    </div>
+    <p style="margin-top:1.6rem"><a class="btn" href="https://ig.me/m/constantine.kan" target="_blank" rel="noopener">Написать «РАЗБОР»</a></p>
+    <p class="btn-note">Напишите мне слово «РАЗБОР», и я отвечу, если остались вопросы</p>
+  </div>
+</section>
+
+<!-- 11. МЯГКИЙ ВЫХОД -->
+<section class="light" style="padding-block:clamp(3rem,2rem + 4vw,5.5rem)">
+  <div class="wrap soft">
+    <img src="img/kniga.jpg" alt="Обложка мини-книги «Фразы, которые закрывают сделки»" loading="lazy" width="909" height="1286">
+    <div>
+      <span class="eyebrow">Пока не готовы к разбору?</span>
+      <h2 style="font-size:clamp(1.5rem,1rem + 1.8vw,2.4rem)">Начните с книги</h2>
+      <p class="muted">Напишите «КНИГА» в директ — скину мини-книгу «Фразы, которые закрывают сделки». Бесплатно.</p>
+      <a class="btn-line" href="https://ig.me/m/constantine.kan" target="_blank" rel="noopener">Написать «КНИГА» →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 12. ФИНАЛ -->
+<section class="final" style="background:var(--bg2)">
+  <div class="wrap">
+    <h2 class="rv">Каждый день, пока Вы думаете, кто-то пишет Вам «сколько стоит?» и уходит молча</h2>
+    <p class="muted" style="margin-bottom:2rem">Напишите «РАЗБОР» мне в директ — пришлю свободное время.</p>
+    <div class="final-cta"><a class="btn" href="https://ig.me/m/constantine.kan" target="_blank" rel="noopener">Написать «РАЗБОР»</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Константин Кан · Разбор переписок</span>
+    <span><a href="https://instagram.com/constantine.kan" target="_blank" rel="noopener">Instagram @constantine.kan</a> · <a href="https://t.me/sales_by_kos" target="_blank" rel="noopener">Telegram-канал</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+const cur = {won:{sign:'₩',min:50000,max:3000000,step:50000,def:600000},tenge:{sign:'₸',min:10000,max:1000000,step:10000,def:180000}};
+let c = 'won';
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ');
+function calc(){
+  const leads = +$('leads').value; let buy = +$('buy').value;
+  if (buy > leads) { buy = leads; $('buy').value = leads; }
+  $('buy').max = leads;
+  const check = +$('check').value, s = cur[c].sign;
+  const extra = Math.min(buy, leads - buy) * check; // в 2 раза больше, но не больше, чем пишет людей
+  $('o-leads').textContent = leads; $('o-buy').textContent = buy;
+  $('o-check').textContent = `${fmt(check)} ${s}`;
+  $('res').textContent = `${fmt(extra)} ${s}`;
+  $('res-yr').textContent = `${fmt(extra*12)} ${s}`;
+}
+['leads','buy','check'].forEach(id=>$(id).addEventListener('input',calc));
+document.querySelectorAll('[data-cur]').forEach(b=>b.addEventListener('click',()=>{
+  c = b.dataset.cur;
+  document.querySelectorAll('[data-cur]').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  const k = $('check'); Object.assign(k,{min:cur[c].min,max:cur[c].max,step:cur[c].step}); k.value = cur[c].def;
+  calc();
+}));
+calc();
+
+// Кнопки: текст «перелистывается» при наведении
+document.querySelectorAll('.btn').forEach(b=>{
+  const t = [...b.childNodes].find(n=>n.nodeType===3 && n.textContent.trim());
+  if (!t) return;
+  const s = t.textContent.trim(), f = document.createElement('span'), a = document.createElement('span'), z = document.createElement('span');
+  f.className = 'flip'; a.textContent = s; z.textContent = s; z.setAttribute('aria-hidden','true');
+  f.append(a, z); t.replaceWith(f);
+});
+
+// Заголовок первого экрана появляется по словам
+const h1 = document.querySelector('.hero h1'); let wi = 0;
+(function split(el){
+  [...el.childNodes].forEach(n=>{
+    if (n.nodeType !== 3) return split(n);
+    const frag = document.createDocumentFragment();
+    n.textContent.split(/(\s+)/).forEach(p=>{
+      if (!p) return;
+      if (/^\s+$/.test(p)) return frag.append(p);
+      const w = document.createElement('span'); w.className = 'w'; w.style.setProperty('--i', wi++); w.textContent = p; frag.append(w);
+    });
+    n.replaceWith(frag);
+  });
+})(h1);
+h1.classList.add('words');
+
+// Появление при прокрутке: каждый элемент отдельно, по очереди
+const sel = '.who,.hero h1,.ticks li,.hero-cta,.eyebrow,h2,.wrap > p,.pain,.chat,.card,.step-row,.case,.shot,.review-side,.fact,.quote,.author > div > p,.faq details,.will li,.how-step,.cost-q p,.heart,.offer,.guarantee,.calc,.soft img,.soft > div > *,.final-cta,.hidden-note';
+document.querySelectorAll(sel).forEach(el=>{ if (!el.parentElement.closest('.rv')) el.classList.add('rv'); });
+const io = new IntersectionObserver(es=>{
+  es.filter(e=>e.isIntersecting).map(e=>e.target)
+    .sort((a,b)=>a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1)
+    .forEach((el,k)=>{ el.style.setProperty('--d', Math.min(k*.09,.6)+'s'); el.classList.add('in'); io.unobserve(el); });
+},{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+// Плавная прокрутка с инерцией (Lenis)
+if (window.Lenis && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const lenis = new Lenis({duration:1.15});
+  requestAnimationFrame(function raf(t){ lenis.raf(t); requestAnimationFrame(raf); });
+  document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el){ e.preventDefault(); lenis.scrollTo(el,{offset:-56}); }
+  }));
+}
+</script>
+</body>
+</html>
